@@ -10,6 +10,59 @@
 
 #define APDS9960_ADDRESS (0x39) /**< I2C Address */
 
+/** Enable Register flields */
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t PON : 1;  /**< Power on */
+    uint8_t AEN : 1;  /**< ALS Enable */
+    uint8_t PEN : 1;  /**< Proximity Enable */
+    uint8_t WEN : 1;  /**< Wait Enable */
+    uint8_t AIEN : 1; /**< ALS Interrupt Enable */
+    uint8_t PIEN : 1; /**< Proximity Interrupt Enable */
+    uint8_t GEN : 1;  /**< Gesture Enable */
+    uint8_t RESERVED : 1; /**< Reserved */
+  } BITS;
+} apds9960_enable_reg_t;
+
+/** Gesture Configuration Registers fields */
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t PMASK_R : 1; /**< Right Photodiode Select */
+    uint8_t PMASK_L : 1; /**< Left Photodiode Select */
+    uint8_t PMASK_D : 1; /**< Down Photodiode Select */
+    uint8_t PMASK_U : 1; /**< Up Photodiode Select */
+    uint8_t SAI : 1;     /**< Sleep After Interrupt */
+    uint8_t PCMP : 1;    /**< Proximity Gain Compensation Enable */
+    uint8_t RESERVED : 2; /**< Reserved */
+  } BITS;
+} apds9960_gconf3_reg_t;
+
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t GMODE : 1; /**< Gesture Mode */
+    uint8_t GIEN : 1;  /**< Gesture Interrupt Enable */
+    uint8_t RESERVEC : 6; /**< Reserved */
+  } BITS;
+} apds9960_gconf4_reg_t;
+
+/** Status Register fields */
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t AVALID : 1; /**< ALS Valid */
+    uint8_t PVALID : 1; /**< Proximity Valid */
+    uint8_t GINT : 1;   /**< Gesture Interrupt */
+    uint8_t RESERVED : 1; /**< Reserved */
+    uint8_t AINT : 1;   /**< ALS Interrupt */
+    uint8_t PINT : 1;   /**< Proximity Interrupt */
+    uint8_t PGSAT : 1;  /**< Proximity State */
+    uint8_t CPSAT : 1;  /**< Clear Photodiode Saturation */
+  } BITS;
+} apds9960_status_reg_t;
+
 /** I2C Registers */
 enum {
   APDS9960_RAM = 0x00,
@@ -144,10 +197,29 @@ enum {
 #define APDS9960_ERROR -1
 
 
+/** APDS9960 device structure */
+enum {
+    SLEEP = 0x00, /**< Sleep mode */
+    IDLE = 0x01,  /**< Idle mode */
+    CONTROL = 0x03, /**< Control mode */
+    WAIT = 0x08, /**< Wait mode */
+    PROXIMITY = 0x09, /**< Proximity mode */
+    GESTURE = 0x0A, /**< Gesture mode */ 
+};
+
+typedef struct {
+  apds9960_enable_reg_t enable;
+  apds9960_gconf3_reg_t gconf3;
+  apds9960_gconf4_reg_t gconf4;
+  apds9960_status_reg_t status;
+} registers_t;
+
 typedef struct {
     uint8_t id; // Device ID
     uint8_t color[4]; // Color data (RGBA)
     i2c_t i2c; // I2C handle
+    uint8_t status; // Device status
+    registers_t registers; // Control register (Enable register)
 
 } apds9960_t;
 
@@ -158,4 +230,8 @@ int8_t apds9960_init(apds9960_t *apds9960, uint8_t gpio_scl, uint8_t gpio_sda, u
 int8_t apds9960_set_integration_time(apds9960_t *apds9960, uint16_t time_ms);
 
 int8_t apds9960_set_gain(apds9960_t *apds9960, apds9960AGain_t gain);
+
+int8_t apds9960_en_gesture(apds9960_t *apds9960, bool en);
+
+int8_t apds9960_go_to(apds9960_t *apds9960, uint8_t status);
 #endif // APDS9960_H
