@@ -63,6 +63,32 @@ typedef union {
   } BITS;
 } apds9960_status_reg_t;
 
+/** Wait time register */
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t WTIME : 8; /**< Wait time */
+  } BITS;
+} apds9960_wtime_reg_t;
+
+/** Gesture Pulse Count and Length Register */
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t GPULSE : 6; /**< Gesture Pulse Count */
+    uint8_t GPLEN : 2; /**< Gesture Pulse Length */
+  } BITS;
+} apds9960_gpulse_reg_t;
+
+/** Proximity Pulse Count Register */
+typedef union {
+  uint8_t WORD;
+  struct {
+    uint8_t PPULSE : 6; /**< Proximity Pulse Count */
+    uint8_t PPLEN : 2; /**< Proximity Pulse Length */
+  } BITS;
+} apds9960_ppulse_reg_t;
+
 /** I2C Registers */
 enum {
   APDS9960_RAM = 0x00,
@@ -212,6 +238,9 @@ typedef struct {
   apds9960_gconf3_reg_t gconf3;
   apds9960_gconf4_reg_t gconf4;
   apds9960_status_reg_t status;
+  apds9960_wtime_reg_t wtime;
+  apds9960_gpulse_reg_t gpulse;
+  apds9960_ppulse_reg_t ppulse;
 } registers_t;
 
 typedef struct {
@@ -225,13 +254,150 @@ typedef struct {
 
 
 
-int8_t apds9960_init(apds9960_t *apds9960, uint8_t gpio_scl, uint8_t gpio_sda, uint32_t clk_speed_hz, uint16_t addr);
+/**
+ * @brief Initialize the APDS9960 sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param gpio_scl GPIO SCL pin number
+ * @param gpio_sda GPIO SDA pin number
+ * @return int8_t 
+ */
+int8_t apds9960_init(apds9960_t *apds9960, uint8_t gpio_scl, uint8_t gpio_sda);
 
-int8_t apds9960_set_integration_time(apds9960_t *apds9960, uint16_t time_ms);
+/**
+ * @brief Set the color integration time
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param time_ms Time in milliseconds (2.78ms to 711ms)
+ * @note The time is set in 2.78ms steps, so the maximum time is 0xFF = 711ms
+ * @return int8_t If successful, return 0, otherwise return -1
+ */ 
+int8_t apds9960_set_color_integration_time(apds9960_t *apds9960, uint16_t time_ms);
 
-int8_t apds9960_set_gain(apds9960_t *apds9960, apds9960AGain_t gain);
+/**
+ * @brief Set the color gain
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param gain Gain value (1x, 4x, 16x, 64x)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_color_gain(apds9960_t *apds9960, apds9960AGain_t gain);
 
+/**
+ * @brief Enable or disable the gesture sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param en Enable or disable the gesture sensor (true/false)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
 int8_t apds9960_en_gesture(apds9960_t *apds9960, bool en);
 
-int8_t apds9960_go_to(apds9960_t *apds9960, uint8_t status);
+/**
+ * @brief Enable or disable the color sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param en Enable or disable the color sensor (true/false)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_en_color(apds9960_t *apds9960, bool en);
+
+/**
+ * @brief Enable or disable the proximity sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param en Enable or disable the proximity sensor (true/false)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_en_proximity(apds9960_t *apds9960, bool en);
+
+/**
+ * @brief Enable or disable the wait sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param en Enable or disable the wait sensor (true/false)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_en_wait(apds9960_t *apds9960, bool en);
+
+/**
+ * @brief Enable or disable the power on the device
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param en Enable or disable the power (true/false)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apsd9960_power_on(apds9960_t *apds9960, bool en);
+
+/**
+ * @brief Get the color data from the sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param rgbc Pointer to the array to store the color data (RGBA)
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_get_color(apds9960_t *apds9960, uint8_t *rgbc);
+
+/**
+ * @brief Get the proximity data from the sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param proximity Pointer to the variable to store the proximity data
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_get_proximity(apds9960_t *apds9960, uint8_t *proximity);
+
+/**
+ * @brief Set the gesture pulse count and length
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param gpulse Gesture pulse count and length
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_enable(apds9960_t *apds9960, uint8_t enable);
+
+/**
+ * @brief Set the wait time for the sensor
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param time_ms Time in milliseconds (2.78ms to 711ms)
+ * @note The time is set in 2.78ms steps, so the maximum time is 0xFF = 711ms
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_wait_time(apds9960_t *apds9960, uint8_t time_ms);
+
+/**
+ * @brief Set the gesture pulse count and length
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param gpulse Gesture pulse count and length
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_gpulse(apds9960_t *apds9960, uint8_t gpulse);
+
+/**
+ * @brief Set the proximity pulse count and length
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param ppulse Proximity pulse count and length
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_ppulse(apds9960_t *apds9960, uint8_t ppulse);
+
+/**
+ * @brief Set the gesture configuration 3 register
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param gconf3 Gesture configuration 3 register value
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_gconf3(apds9960_t *apds9960, uint8_t gconf3);
+
+/**
+ * @brief Set the gesture configuration 4 register
+ * 
+ * @param apds9960 Handle to the APDS9960 device structure
+ * @param gconf4 Gesture configuration 4 register value
+ * @return int8_t If successful, return 0, otherwise return -1
+ */
+int8_t apds9960_set_gconf4(apds9960_t *apds9960, uint8_t gconf4);
 #endif // APDS9960_H

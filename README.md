@@ -1,32 +1,20 @@
-# _Sample project_
+# APDS9960 Driver for ESP32-S3
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+This is a lightweight C driver for the **APDS9960** sensor, designed for the **ESP32-S3** platform.  
+It supports gesture recognition, color sensing, ambient light, and proximity detection.
 
-This is the simplest buildable example. The example is used by command `idf.py create-project`
-that copies the project to user specified path and set it's name. For more information follow the [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project)
+> **Note**: This library uses a **Hardware Abstraction Layer (HAL)** for I2C communication, defined in `platform_esp32s3.h`. You can adapt this to your specific hardware platform as needed.
+
+## Features
+
+- Color sensing (Red, Green, Blue, Clear)
+- Ambient light and proximity sensing
+- Designed for embedded systems
+- Clean and simple register-level API
+
+## Dependencies
+
+- ESP-IDF (ESP32-S3 SDK)
+- HAL for I2C communication (`platform_esp32s3.h`)
 
 
-
-## How to use example
-We encourage the users to use the example as a template for the new projects.
-A recommended way is to follow the instructions on a [docs page](https://docs.espressif.com/projects/esp-idf/en/latest/api-guides/build-system.html#start-a-new-project).
-
-## Example folder contents
-
-The project **sample_project** contains one source file in C language [main.c](main/main.c). The file is located in folder [main](main).
-
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt`
-files that provide set of directives and instructions describing the project's source files and targets
-(executable, library, or both). 
-
-Below is short explanation of remaining files in the project folder.
-
-```
-├── CMakeLists.txt
-├── main
-│   ├── CMakeLists.txt
-│   └── main.c
-└── README.md                  This is the file you are currently reading
-```
-Additionally, the sample project contains Makefile and component.mk files, used for the legacy Make based build system. 
-They are not used or needed when building with CMake and idf.py.

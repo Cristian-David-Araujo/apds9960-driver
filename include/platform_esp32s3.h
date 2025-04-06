@@ -72,6 +72,9 @@
   * @param len 
   */
  void i2c_read_reg(i2c_t *i2c, uint8_t reg, uint8_t *data, size_t len);
+
+ void i2c_read_reg_block(i2c_t *i2c, uint8_t reg, uint8_t *data, size_t len);
+ 
  /**
   * @brief Given a 2 bytes register address, read the data from the register.
   * 
@@ -100,6 +103,7 @@
   * @param len 
   */
  void i2c_write(i2c_t *i2c, uint8_t *data, size_t len);
+
  
  /**
   * @brief Given a 2 bytes register address, write the data to the register.

@@ -48,6 +48,14 @@ void i2c_read_reg(i2c_t *i2c, uint8_t reg, uint8_t *data, size_t len)
     uint8_t write_buffer[] = {reg};
     i2c_master_transmit_receive(i2c->dev_handle, write_buffer, 1, (uint8_t *)data, len, I2C_TIMEOUT_MS / portTICK_PERIOD_MS);
 }
+void i2c_read_reg_block(i2c_t *i2c, uint8_t start_reg, uint8_t *data, size_t len)
+{
+    for (size_t i = 0; i < len; i++) {
+        uint8_t write_buffer[] = {start_reg + i};
+        i2c_master_transmit_receive(i2c->dev_handle, write_buffer, 1, &data[i], 1, I2C_TIMEOUT_MS / portTICK_PERIOD_MS);
+    }
+}
+
 void i2c_read_reg16bits(i2c_t *i2c, uint16_t reg, uint8_t *data, size_t len)
 {
     uint8_t writebuff [] = {reg >> 8, reg};

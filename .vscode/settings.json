@@ -11,7 +11,8 @@
         "*.vhd": "shellscript",
         "*.c": "c",
         "apds9960.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "platform_esp32s3.h": "c"
     },
     "idf.flashType": "UART",
     "idf.customExtraVars": {
